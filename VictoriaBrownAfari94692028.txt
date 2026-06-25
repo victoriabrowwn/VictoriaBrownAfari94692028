@@ -1,0 +1,337 @@
+Name: Victoria Brown Afari
+ID: 94692028
+Cohort: Cohort B
+
+MariaDB [(none)]> create database Project;
+Query OK, 1 row affected (0.020 sec)
+
+MariaDB [(none)]> show databases
+    -> ;
++--------------------+
+| Database           |
++--------------------+
+| company            |
+| contactsdetails    |
+| information_schema |
+| movieco            |
+| mydb               |
+| mysql              |
+| performance_schema |
+| prestigecars       |
+| project            |
+| sys                |
+| test               |
++--------------------+
+11 rows in set (0.133 sec)
+
+MariaDB [(none)]> use project;
+Database changed
+
+MariaDB [project]> create table Employee(empNo int primary key,fName varchar(30) NOT NULL, lName varchar(30) NOT NULL, address varchar(100), DOB date, sex char(1) CHECK (sex IN('M','F')), position varchar(20) CHECK(position IN ('Manager', 'Team Leader', 'Analyst', 'Software Developer')), deptNo varchar(30));
+Query OK, 0 rows affected (0.051 sec)
+
+MariaDB [project]> describe employee;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| empNo    | int(11)      | NO   | PRI | NULL    |       |
+| fName    | varchar(30)  | NO   |     | NULL    |       |
+| lName    | varchar(30)  | NO   |     | NULL    |       |
+| address  | varchar(100) | YES  |     | NULL    |       |
+| DOB      | date         | YES  |     | NULL    |       |
+| sex      | char(1)      | YES  |     | NULL    |       |
+| position | varchar(20)  | YES  |     | NULL    |       |
+| deptNo   | varchar(30)  | YES  |     | NULL    |       |
++----------+--------------+------+-----+---------+-------+
+8 rows in set (0.074 sec)
+
+MariaDB [project]> create table Department(deptNo varchar(30) primary key, deptName varchar(50) NOT NULL, mgrEmpNo varchar(30));
+Query OK, 0 rows affected (0.020 sec)
+
+MariaDB [project]> describe Department;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| deptNo   | varchar(30) | NO   | PRI | NULL    |       |
+| deptName | varchar(50) | NO   |     | NULL    |       |
+| mgrEmpNo | varchar(30) | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+3 rows in set (0.057 sec)
+
+MariaDB [project]> alter table Employee modify empNo varchar(30);
+Query OK, 0 rows affected (0.083 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [project]> describe Employee;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| empNo    | varchar(30)  | NO   | PRI | NULL    |       |
+| fName    | varchar(30)  | NO   |     | NULL    |       |
+| lName    | varchar(30)  | NO   |     | NULL    |       |
+| address  | varchar(100) | YES  |     | NULL    |       |
+| DOB      | date         | YES  |     | NULL    |       |
+| sex      | char(1)      | YES  |     | NULL    |       |
+| position | varchar(20)  | YES  |     | NULL    |       |
+| deptNo   | varchar(30)  | YES  |     | NULL    |       |
++----------+--------------+------+-----+---------+-------+
+8 rows in set (0.027 sec)
+
+MariaDB [project]> alter table Employee add constraint FK_Employee_Department foreign key(deptNo) references Department(deptNo);
+Query OK, 0 rows affected (0.038 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [project]> describe Employee;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| empNo    | varchar(30)  | NO   | PRI | NULL    |       |
+| fName    | varchar(30)  | NO   |     | NULL    |       |
+| lName    | varchar(30)  | NO   |     | NULL    |       |
+| address  | varchar(100) | YES  |     | NULL    |       |
+| DOB      | date         | YES  |     | NULL    |       |
+| sex      | char(1)      | YES  |     | NULL    |       |
+| position | varchar(20)  | YES  |     | NULL    |       |
+| deptNo   | varchar(30)  | YES  | MUL | NULL    |       |
++----------+--------------+------+-----+---------+-------+
+8 rows in set (0.047 sec)
+
+MariaDB [project]> alter table Department add constraint FK_Department_Manager foreign key (mgrEmpNo) references Employee(empNo);
+Query OK, 0 rows affected (0.022 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [project]> describe Department;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| deptNo   | varchar(30) | NO   | PRI | NULL    |       |
+| deptName | varchar(50) | NO   |     | NULL    |       |
+| mgrEmpNo | varchar(30) | YES  | MUL | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+3 rows in set (0.053 sec)
+
+MariaDB [project]> create table Project(projNo varchar(30) primary key, projName varchar(50) NOT NULL, deptNo varchar(30) NOT NULL, foreign key(deptNo) references Department(deptNo));
+Query OK, 0 rows affected (0.020 sec)
+
+MariaDB [project]> describe Project;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| projNo   | varchar(30) | NO   | PRI | NULL    |       |
+| projName | varchar(50) | NO   |     | NULL    |       |
+| deptNo   | varchar(30) | NO   | MUL | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+3 rows in set (0.053 sec)
+
+MariaDB [project]> create table WorksOn(empNo varchar(30), projNo varchar(30), dateWorked date, hoursWorked int check (hoursWorked BETWEEN 0 AND 40), primary key(empNo, projNo, dateWorked), foreign key(empNo) references Employee(empNo), foreign key(projNo) references Project(projNo));
+Query OK, 0 rows affected (0.022 sec)
+
+MariaDB [project]> describe WorksOn;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| empNo       | varchar(30) | NO   | PRI | NULL    |       |
+| projNo      | varchar(30) | NO   | PRI | NULL    |       |
+| dateWorked  | date        | NO   | PRI | NULL    |       |
+| hoursWorked | int(11)     | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+4 rows in set (0.036 sec)
+
+MariaDB [project]> INSERT INTO Department (deptNo, deptName, mgrEmpNo) values
+    -> ('1', 'IT', NULL),
+    ->
+    -> ('2', 'Planning', NULL),
+    -> ('3', 'Finance', NULL);
+Query OK, 3 rows affected (0.078 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [project]> select * from department;
++--------+----------+----------+
+| deptNo | deptName | mgrEmpNo |
++--------+----------+----------+
+| 1      | IT       | NULL     |
+| 2      | Planning | NULL     |
+| 3      | Finance  | NULL     |
++--------+----------+----------+
+3 rows in set (0.001 sec)
+
+MariaDB [project]> insert into Employee (empNo, fName, lName, address, DOB, sex, position, deptNo) values
+    -> ('101', 'Alice', 'Mensah', 'Accra', '1995-05-12', 'F', 'Manager', '1'),
+    -> ('102', 'Bob', 'Owusu', 'Kumasi', '1992-03-20', 'M', 'Analyst', '1'),
+    -> ('103', 'Cynthia', 'Boateng', 'Takoradi', '1998-07-08', 'F', 'Manager', '2'),
+    -> ('104', 'David', 'Asare', 'Cape Coast', '1988-09-15', 'M', 'Team Leader', '2'),
+    -> ('105', 'Evelyn', 'Addo', 'Tamale', '1991-11-25', 'F', 'Software Developer', '3');
+Query OK, 5 rows affected (0.019 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [project]> select * from Employee;
++-------+---------+---------+------------+------------+------+--------------------+--------+
+| empNo | fName   | lName   | address    | DOB        | sex  | position           | deptNo |
++-------+---------+---------+------------+------------+------+--------------------+--------+
+| 101   | Alice   | Mensah  | Accra      | 1995-05-12 | F    | Manager            | 1      |
+| 102   | Bob     | Owusu   | Kumasi     | 1992-03-20 | M    | Analyst            | 1      |
+| 103   | Cynthia | Boateng | Takoradi   | 1998-07-08 | F    | Manager            | 2      |
+| 104   | David   | Asare   | Cape Coast | 1988-09-15 | M    | Team Leader        | 2      |
+| 105   | Evelyn  | Addo    | Tamale     | 1991-11-25 | F    | Software Developer | 3      |
++-------+---------+---------+------------+------------+------+--------------------+--------+
+5 rows in set (0.000 sec)
+
+MariaDB [project]> UPDATE Department SET mgrEmpNo = '101' WHERE deptNo = '1';
+Query OK, 1 row affected (0.003 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [project]> UPDATE Department SET mgrEmpNo = '103' WHERE deptNo = '2';
+Query OK, 1 row affected (0.002 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [project]> UPDATE Department SET mgrEmpNo = '105' WHERE deptNo = '3';
+Query OK, 1 row affected (0.014 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [project]> select * from Department;
++--------+----------+----------+
+| deptNo | deptName | mgrEmpNo |
++--------+----------+----------+
+| 1      | IT       | 101      |
+| 2      | Planning | 103      |
+| 3      | Finance  | 105      |
++--------+----------+----------+
+3 rows in set (0.000 sec)
+
+MariaDB [project]> INSERT INTO Project (projNo, projName, deptNo) VALUES
+    -> ('201', 'SCCS', '1'),
+    -> ('202', 'Payroll System', '1'),
+    -> ('203', 'Budget Planner', '2'),
+    -> ('204', 'Audit Tracker', '3');
+Query OK, 4 rows affected (0.016 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+MariaDB [project]> select * from Project;
++--------+----------------+--------+
+| projNo | projName       | deptNo |
++--------+----------------+--------+
+| 201    | SCCS           | 1      |
+| 202    | Payroll System | 1      |
+| 203    | Budget Planner | 2      |
+| 204    | Audit Tracker  | 3      |
++--------+----------------+--------+
+4 rows in set (0.001 sec)
+
+MariaDB [project]> INSERT INTO WorksOn (empNo, projNo, dateWorked, hoursWorked) VALUES
+    -> ('101', '201', '2026-01-05', 8),
+    -> ('101', '201', '2026-01-06', 7),
+    -> ('102', '201', '2026-01-05', 6),
+    -> ('102', '202', '2026-01-07', 8),
+    -> ('103', '203', '2026-01-08', 8),
+    -> ('103', '203', '2026-01-09', 7),
+    -> ('104', '203', '2026-01-10', 5),
+    -> ('105', '204', '2026-01-11', 8),
+    -> ('105', '204', '2026-01-12', 6);
+Query OK, 9 rows affected (0.007 sec)
+Records: 9  Duplicates: 0  Warnings: 0
+
+MariaDB [project]> select * from WorksOn;
++-------+--------+------------+-------------+
+| empNo | projNo | dateWorked | hoursWorked |
++-------+--------+------------+-------------+
+| 101   | 201    | 2026-01-05 |           8 |
+| 101   | 201    | 2026-01-06 |           7 |
+| 102   | 201    | 2026-01-05 |           6 |
+| 102   | 202    | 2026-01-07 |           8 |
+| 103   | 203    | 2026-01-08 |           8 |
+| 103   | 203    | 2026-01-09 |           7 |
+| 104   | 203    | 2026-01-10 |           5 |
+| 105   | 204    | 2026-01-11 |           8 |
+| 105   | 204    | 2026-01-12 |           6 |
++-------+--------+------------+-------------+
+9 rows in set (0.001 sec)
+
+Exercise 7.25
+MariaDB [project]> create view FemaleManagedProjects as select p.projNo, p.projName FROM Project p join Department d ON p.deptNO = d.deptNo JOIN Employee e ON d.mgrEmpNo = e.empNo WHERE e.sex = 'F' ORDER BY p.projNo;
+Query OK, 0 rows affected (0.020 sec)
+
+MariaDB [project]> select * from FemaleManagedProjects;
++--------+----------------+
+| projNo | projName       |
++--------+----------------+
+| 201    | SCCS           |
+| 202    | Payroll System |
+| 203    | Budget Planner |
+| 204    | Audit Tracker  |
++--------+----------------+
+4 rows in set (0.008 sec)
+
+Exercise 7.26
+MariaDB [project]> create view EmployeeProjectHours as select e.empNo, e.fName, e.lName, p.projName, w.hoursWorked from Employee e join WorksOn w on e.empNo = w.empNo join Project p on w.projNo = p.projNo;
+Query OK, 0 rows affected (0.017 sec)
+
+MariaDB [project]> select * from EmployeeProjectHours;
++-------+---------+---------+----------------+-------------+
+| empNo | fName   | lName   | projName       | hoursWorked |
++-------+---------+---------+----------------+-------------+
+| 101   | Alice   | Mensah  | SCCS           |           8 |
+| 101   | Alice   | Mensah  | SCCS           |           7 |
+| 102   | Bob     | Owusu   | SCCS           |           6 |
+| 102   | Bob     | Owusu   | Payroll System |           8 |
+| 103   | Cynthia | Boateng | Budget Planner |           8 |
+| 103   | Cynthia | Boateng | Budget Planner |           7 |
+| 104   | David   | Asare   | Budget Planner |           5 |
+| 105   | Evelyn  | Addo    | Audit Tracker  |           8 |
+| 105   | Evelyn  | Addo    | Audit Tracker  |           6 |
++-------+---------+---------+----------------+-------------+
+9 rows in set (0.015 sec)
+
+Exercise 7.27
+MariaDB [project]> create view EmpProject(empNo, projNo, totalHours) as select w.empNo, w.projNo, SUM(hoursWorked) from Employee e, Project p, WorksOn w where e.empNo = w.empNo and p.projNo = w.projNo group by w.empNo, w.projNo;
+Query OK, 0 rows affected (0.010 sec)
+
+a)
+MariaDB [project]> select * from EmpProject;
++-------+--------+------------+
+| empNo | projNo | totalHours |
++-------+--------+------------+
+| 101   | 201    |         15 |
+| 102   | 201    |          6 |
+| 102   | 202    |          8 |
+| 103   | 203    |         15 |
+| 104   | 203    |          5 |
+| 105   | 204    |         14 |
++-------+--------+------------+
+6 rows in set (0.003 sec)
+
+b)
+
+MariaDB [project]> select projNo from EmpProject where projNo = 'SCCS';
++---------+
+| projNo  |
++---------+
+| SCCS    |
+| SCCS    |
++---------+
+2 rows in set (0.003 sec)
+
+c)
+MariaDB [project]> select count(projNo) from EmpProject where empNo = '101';
++---------------+
+| count(projNo) |
++---------------+
+|             1 |
++---------------+
+1 row in set (0.002 sec)
+
+d)
+MariaDB [project]> select empNo, totalHours from EmpProject group by empNo;
++-------+------------+
+| empNo | totalHours |
++-------+------------+
+| 101   |         15 |
+| 102   |          6 |
+| 103   |         15 |
+| 104   |          5 |
+| 105   |         14 |
++-------+------------+
+5 rows in set (0.001 sec)
+
+Exercise 7.28
+There is no need to access the Part table when a new row is inserted with partCost > 1000, a row is updated from partCost <= 1000 to partCost > 1000. In these cases, simply add the partNo to the view. The part table must be accessed when a qualifying row (partCost > 1000) is deleted or when a qualifying row is updated to partCost <= 1000.
+
